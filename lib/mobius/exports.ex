@@ -213,9 +213,28 @@ defmodule Mobius.Exports do
   end
 
   def plot(metric_name, type, tags, opts) do
-    series = series(metric_name, type, tags, opts)
+    metrics = get_metrics(metric_name, type, tags, opts)
+    y_series = Enum.map(metrics, & &1.value)
 
-    case Asciichart.plot(series, height: 12) do
+    max_ts =
+      with %{timestamp: ts} <- List.last(metrics) do
+        ts
+      end
+
+    granularity =
+      case Keyword.get(opts, :last) do
+        {_, unit} -> unit
+        _ -> :second
+      end
+
+    unit_offset = Mobius.Exports.Metrics.get_unit_offset(granularity)
+
+    x_series =
+      Enum.map(metrics, fn metric ->
+        div(metric.timestamp - max_ts, unit_offset)
+      end)
+
+    case Asciichart.plot_with_x_axis(y_series, x_series, height: 12) do
       {:ok, plot} ->
         chart = [
           "\t\t",

@@ -93,8 +93,8 @@ defmodule Mobius.Exports.Metrics do
     [from: ts]
   end
 
-  defp get_unit_offset(:second), do: 1
-  defp get_unit_offset(:minute), do: 60
-  defp get_unit_offset(:hour), do: 3600
-  defp get_unit_offset(:day), do: 86400
+  def get_unit_offset(:second), do: 1
+  def get_unit_offset(:minute), do: 60
+  def get_unit_offset(:hour), do: 3600
+  def get_unit_offset(:day), do: 86400
 end
